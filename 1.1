@@ -1,0 +1,83 @@
+import pygame
+import random
+
+# Initialize Pygame
+pygame.init()
+
+# Screen dimensions
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("2D Shooter")
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+
+# Player settings
+player_size = 50
+player_pos = [WIDTH//2, HEIGHT-2*player_size]
+player_speed = 10
+
+# Bullet settings
+bullet_size = 10
+bullet_speed = 20
+bullets = []
+
+# Enemy settings
+enemy_size = 50
+enemy_speed = 5
+enemies = []
+
+# Clock
+clock = pygame.time.Clock()
+
+# Main game loop
+running = True
+while running:
+    screen.fill(BLACK)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # Player movement
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT] and player_pos[0] > 0:
+        player_pos[0] -= player_speed
+    if keys[pygame.K_RIGHT] and player_pos[0] < WIDTH - player_size:
+        player_pos[0] += player_speed
+    if keys[pygame.K_SPACE]:
+        bullets.append([player_pos[0] + player_size//2, player_pos[1]])
+
+    # Bullet movement
+    for bullet in bullets:
+        bullet[1] -= bullet_speed
+        if bullet[1] < 0:
+            bullets.remove(bullet)
+
+    # Enemy generation
+    if random.randint(1, 50) == 1:
+        enemies.append([random.randint(0, WIDTH-enemy_size), 0])
+
+    # Enemy movement
+    for enemy in enemies:
+        enemy[1] += enemy_speed
+        if enemy[1] > HEIGHT:
+            enemies.remove(enemy)
+
+    # Drawing player
+    pygame.draw.rect(screen, WHITE, (player_pos[0], player_pos[1], player_size, player_size))
+
+    # Drawing bullets
+    for bullet in bullets:
+        pygame.draw.rect(screen, RED, (bullet[0], bullet[1], bullet_size, bullet_size))
+
+    # Drawing enemies
+    for enemy in enemies:
+        pygame.draw.rect(screen, WHITE, (enemy[0], enemy[1], enemy_size, enemy_size))
+
+    pygame.display.flip()
+    clock.tick(30)
+
+pygame.quit()
